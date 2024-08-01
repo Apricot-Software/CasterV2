@@ -1,0 +1,273 @@
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        textarea:focus, input:focus, div:focus{
+            outline: none;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .top-bar {
+            background-color: #000000;
+            color: white;
+            padding: 1em;
+            text-align: left;
+            border-bottom: solid;
+            border-color: #214d26;
+            border-width: 1px;
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+        }
+
+        .left-bar {
+            display: flex;
+            align-items: flex-end;
+            flex-direction: column;
+            background-color: #000000;
+            padding: 1em;
+            width: 25%;
+            border-right: solid;
+            border-color: #214d26;
+            border-width: 1px;
+            transition: width 0.5s ease, height 0.5s ease;
+        }
+        .bar-button {
+            width: 200px;
+            height: 20px;
+            display: flex;
+            background: black;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin: 5px 0;
+            text-align: left;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .bar-button-icon {
+            width: 20px;
+            vertical-align: middle;
+            padding-right: 10px;
+        }
+        .bar-button:hover {
+            background-color: #050805;
+        }
+        .right-bar {
+            display: flex;
+            background-color: #000000;
+            width: 25%;
+            border-left: solid;
+            border-color: #214d26;
+            border-width: 1px;
+            transition: width 0.5s ease, height 0.5s ease;
+            flex-flow: column;
+            overflow: scroll;
+            height: 100vh;
+            scrollbar-color: #ffff #0f1810;
+        }
+
+        .main-content {
+            background-color: #000000;
+            flex: 1;
+            overflow: scroll;
+            height: 100vh;
+            scrollbar-color: #ffff #000000;
+            overflow-anchor: none;
+        }
+        .post-flex-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0px;
+        }
+        .post-button {
+            background-color: green;
+            border: none;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .spacer {
+            padding-bottom: 60px;
+        }
+        .post-container {
+            border-bottom: solid;
+            padding: 20px;
+            padding-top: 20px;
+            border-color: #214d26;
+            border-width: 1px;
+            transition: .3s;
+            cursor: pointer;
+        }
+        .profile-container {
+            display: flex;
+            padding: 20px;
+            flex-direction: column;
+        }
+        .post-container:hover {
+            background-color: #050805;
+        }
+        .user-bar {
+            font-family: "Roboto Mono", monospace;
+            padding: 0px;
+            margin: 0px;
+            display: flex;
+            align-items: center;
+            gap: 5px
+        }
+        .user-pfp {
+            width: 40px;
+            height: 40px;
+            border-radius: 50px;
+        }
+        .like-icon {
+            margin: 5px;
+            width: 15px;
+            vertical-align: middle;
+        }
+
+        .handle {
+            color: grey;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .display-name {
+            color: white;
+            font-weight: 800;
+        }
+        .post-text {
+            font-family: "Roboto Mono", monospace;
+            color: white;
+            white-space: pre-wrap;
+        }
+        .post-text a{
+            color: green;
+        }
+        .ab-text {
+            font-family: "Roboto Mono", monospace;
+            color: white;
+            vertical-align: middle;
+            font-size: 16px;
+        }
+        .post-action-bar {
+            width: 50%;
+            display: flex;
+            justify-content: space-between;
+        }
+        h1 {
+            font-family: "Roboto Mono", monospace;
+            font-size: 30px;
+            color: white;
+        }
+        .poster-container {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .post-input {
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 10px;
+            min-height: 2em;
+            overflow: auto;
+            font-family: "Roboto Mono", monospace;
+            color: white;
+            background-color: none;
+            transition: 0.3s;
+            cursor: text;
+        }
+        .input {
+            font-family: "Roboto Mono", monospace;
+            font-size: 15px;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: rgb(0,15,0);
+            color: white;
+            border: none
+        }
+        .neutralButton {
+            font-family: "Roboto Mono", monospace;
+            font-size: 15px;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: rgb(0,45,0);
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .positiveButton {
+            font-family: "Roboto Mono", monospace;
+            font-size: 15px;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: rgb(100,250,100);
+            color: black;
+            border: none;
+            cursor: pointer;
+        }
+        .dangerButton {
+            font-family: "Roboto Mono", monospace;
+            font-size: 15px;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: rgb(250,50,50);
+            color: black;
+            border: none;
+            cursor: pointer;
+        }
+        .positiveButtonDisabled {
+            font-family: "Roboto Mono", monospace;
+            font-size: 15px;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: rgba(100,250,100,0.5);
+            color: black;
+            border: none;
+            cursor: not-allowed;
+        }
+        [contenteditable][placeholder]:empty:before {
+            content: attr(placeholder);
+            color: gray;
+            background-color: transparent;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        a:link {
+            text-decoration: none;
+        }
+        @media (max-width: 1000px) {
+            .bar-text {
+                display: none
+            }
+            .bar-button {
+                width: auto;
+            }
+            .bar-button-icon {
+                padding-right: 0px;
+            }
+            .left-bar {
+                width: 40px;
+            }
+            .right-bar {
+                display: none
+            }
+        }

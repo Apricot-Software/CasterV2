@@ -1,0 +1,747 @@
+# Caster V2
+# Developed by Collin Davis
+import time
+from castersecrets import sql_host, sql_dbname, sql_user, sql_password, nr_user, nr_pass
+from flask import Flask, jsonify, render_template, redirect, request, url_for, make_response
+import asyncio
+import psycopg2
+import os
+import re
+import hashlib
+import string
+import bleach
+import random
+import smtplib
+from email.message import EmailMessage
+from bs4 import BeautifulSoup
+import datetime
+
+app = Flask(__name__)
+
+valid_chars = "".join([string.digits, string.ascii_letters, "_"])
+valid_pass_chars = "".join([string.digits, string.ascii_letters, string.punctuation])
+def store_post_content(user_id, content):
+    sanitized_content = bleach.clean(content, tags=[], attributes={}, protocols=[], strip=True)
+def token_generator(size=36, chars=string.ascii_letters + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+def message_id_generator(size=12, chars=string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+def remove_html_tags(text):
+    soup = BeautifulSoup(text, 'html.parser')
+    return soup.get_text()
+
+
+def convert_mentions_to_links(text):
+    # Regular expression to find mentions in the text
+    mention_pattern = r'@(\w+)'
+
+    # Function to replace each mention with a link
+    def replace_mention_with_link(match):
+        username = match.group(1)
+        return f'<a href="/profile?user={username}">@{username}</a>'
+
+    # Use re.sub to replace all mentions with links
+    result = re.sub(mention_pattern, replace_mention_with_link, text)
+
+    return result
+
+def email_alert(subject, body, to):
+    try:
+        msg = EmailMessage()
+        msg.set_content(body)
+        msg['subject'] = subject
+        msg['to'] = to
+        msg['from'] = nr_user
+
+        server = smtplib.SMTP("smtp.forwardemail.net", 587)
+        server.starttls()
+        server.login(nr_user, nr_pass)
+        server.send_message(msg)
+
+        server.quit()
+    except Exception as e:
+        print(e)
+
+@app.route('/')
+def home():
+    token = request.cookies.get('token')
+    print(token)
+    if token is not None:
+        conn = psycopg2.connect(
+            host=sql_host,
+            dbname=sql_dbname,
+            user=sql_user,
+            password=sql_password,
+            port=5432
+        )
+        c = conn.cursor()
+
+        c.execute('SELECT pfp FROM usercred WHERE token = %s', [token])
+
+        try:
+            pfp = c.fetchone()[0]
+        except TypeError:
+            return redirect(url_for('login'))
+
+        return render_template('caster.html', pfp=pfp)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/search')
+def search():
+    token = request.cookies.get('token')
+    print(token)
+    if token is not None:
+        conn = psycopg2.connect(
+            host=sql_host,
+            dbname=sql_dbname,
+            user=sql_user,
+            password=sql_password,
+            port=5432
+        )
+        c = conn.cursor()
+
+        c.execute('SELECT pfp FROM usercred WHERE token = %s', [token])
+
+        try:
+            pfp = c.fetchone()[0]
+        except TypeError:
+            return redirect(url_for('login'))
+
+        return render_template('search.html', pfp=pfp)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/profile')
+def profile():
+    profile_user = request.args.get('user')
+    if profile_user is not None:
+        conn = psycopg2.connect(
+            host=sql_host,
+            dbname=sql_dbname,
+            user=sql_user,
+            password=sql_password,
+            port=5432
+        )
+
+        c = conn.cursor()
+
+        c.execute("SELECT pfp, displayname, bio, isveri FROM usercred WHERE username = %s", [profile_user])
+
+        user_data = c.fetchone()
+
+        pfp = user_data[0]
+        displayname = user_data[1]
+        bio = user_data[2]
+        if user_data[3] == "YES":
+            isveri = "unset"
+        else:
+            isveri = "none"
+
+        return render_template('profile.html', profile_user=profile_user, pfp=pfp, displayname=displayname, bio=bio, isveri=isveri)
+    else:
+        token = request.cookies.get('token')
+
+        conn = psycopg2.connect(
+            host=sql_host,
+            dbname=sql_dbname,
+            user=sql_user,
+            password=sql_password,
+            port=5432
+        )
+
+        c = conn.cursor()
+
+        c.execute("SELECT username FROM usercred WHERE token = %s", [token])
+
+        profile_user = c.fetchone()[0]
+
+        c.execute("SELECT pfp, displayname, bio, isveri FROM usercred WHERE username = %s", [profile_user])
+
+        user_data = c.fetchone()
+
+        pfp = user_data[0]
+        displayname = user_data[1]
+        bio = user_data[2]
+        if user_data[3] == "YES":
+            isveri = "unset"
+        else:
+            isveri = "none"
+
+        return render_template('profile.html', profile_user=profile_user, pfp=pfp, displayname=displayname, bio=bio, isveri=isveri)
+
+@app.route('/create')
+def create():
+    token = request.cookies.get('token')
+    print(token)
+    if token is not None:
+        conn = psycopg2.connect(
+            host=sql_host,
+            dbname=sql_dbname,
+            user=sql_user,
+            password=sql_password,
+            port=5432
+        )
+        c = conn.cursor()
+
+        c.execute('SELECT pfp FROM usercred WHERE token = %s', [token])
+
+        pfp = c.fetchone()[0]
+        print(pfp)
+        if pfp is None:
+            return redirect(url_for('login'))
+
+        return render_template('post.html', pfp=pfp)
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/settings')
+def settings():
+    conn = psycopg2.connect(
+        host=sql_host,
+        dbname=sql_dbname,
+        user=sql_user,
+        password=sql_password,
+        port=5432
+    )
+    c = conn.cursor()
+
+    token = request.cookies.get('token')
+
+    c.execute("SELECT displayname, pfp, bio FROM public.usercred WHERE token = %s", [token])
+    result = c.fetchone()
+    print(result)
+
+    displayName = result[0]
+    pfp = result[1]
+    bio = result[2]
+
+
+    return render_template('settings.html', displayName=displayName, pfp=pfp, bio=remove_html_tags(bio))
+
+@app.route('/post')
+def post():
+    post_id = request.args.get("id")
+
+    token = request.cookies.get("token")
+
+    conn = psycopg2.connect(
+        host=sql_host,
+        dbname=sql_dbname,
+        user=sql_user,
+        password=sql_password,
+        port=5432
+    )
+    c = conn.cursor()
+
+    c.execute("SELECT username, postcontent, messageid, timestamp FROM casterposts WHERE messageid = %s", [post_id])
+    fetchedPost = c.fetchone()
+
+    c.execute("SELECT pfp, displayname FROM usercred WHERE username = %s", [fetchedPost[0]])
+    userinfo = c.fetchone()
+    print(userinfo)
+    unixtime = round(float(fetchedPost[3]))
+    timestamp = datetime.datetime.utcfromtimestamp(unixtime).strftime('%Y-%m-%d %H:%M:%S')
+    if userinfo:
+        pfp = f"{userinfo[0]}"
+        handle = f"{fetchedPost[0]}".replace("@", "")
+        displayName = f"{userinfo[1]}"
+        postContent = f"{fetchedPost[1]}"
+        postId = f"{fetchedPost[2]}"
+        timestamp = f"{timestamp}"
+        print()
+
+    c.execute("SELECT pfp FROM usercred WHERE token = %s", [token])
+    user_pfp = c.fetchone()[0]
+
+    return render_template("viewpost.html", pfp=pfp, handle=handle, displayName=displayName, postContent=postContent, post_id=postId, timestamp=timestamp, user_pfp=user_pfp)
+
+@app.route('/login')
+def login():
+    if request.args.get('message') is not None:
+        message = request.args.get('message')
+        return render_template('login.html', message=message)
+    return render_template('login.html')
+
+@app.route('/signup')
+def signup():
+    if request.args.get('message') is not None:
+        message = request.args.get('message')
+        return render_template('signup.html', message=message)
+    return render_template('signup.html')
+
+@app.route('/logout')
+def logout():
+    resp = make_response(redirect(url_for("login")))
+    resp.delete_cookie("login")
+    return resp
+
+@app.route('/api/posts')
+async def post_api():
+    page = int(request.args.get("page"))
+    page = page * 15
+    conn = psycopg2.connect(
+        host=sql_host,
+        dbname=sql_dbname,
+        user=sql_user,
+        password=sql_password,
+        port=5432
+    )
+    c = conn.cursor()
+
+    c.execute("SELECT username, postcontent, messageid, timestamp FROM casterposts ORDER BY timestamp DESC LIMIT 15 OFFSET %s", [page])
+
+    fetchedPosts = c.fetchall()
+
+    posts = []
+
+    for post in fetchedPosts:
+        c.execute("SELECT pfp, displayname, isveri FROM usercred WHERE username = %s", [post[0]])
+
+        userinfo = c.fetchone()
+        print(userinfo)
+        unixtime = round(float(post[3]))
+        timestamp = datetime.datetime.utcfromtimestamp(unixtime).strftime('%Y-%m-%d %H:%M:%S')
+        if userinfo:
+            if userinfo[2] == "YES":
+                isveri = True
+            else:
+                isveri = False
+
+            post_data = {
+                "pfp": f"{userinfo[0]}",
+                "handle": f"@{post[0]}",
+                "displayName": f"{userinfo[1]}",
+                "isveri": isveri,
+                "postContent": f"{post[1]}",
+                "postId": f"{post[2]}",
+                "timestamp": f"{timestamp}"
+            }
+            posts.append(post_data)
+
+    # posts = [
+        # {
+            # "pfp": "static/img/limeade.png",
+            # "handle": "@lime",
+            # "displayName": "limeade",
+            # "postContent": "This is a test"
+        # },
+        # {
+            # "pfp": "static/img/limeade.png",
+            # "handle": "@lime",
+            # "displayName": "limeade",
+            # "postContent": "comedy is now illegal"
+    #         # }
+    #     # ]
+    return jsonify(posts)
+
+@app.route('/api/searchposts')
+async def post_search_api():
+    query = request.args.get("query")
+    conn = psycopg2.connect(
+        host=sql_host,
+        dbname=sql_dbname,
+        user=sql_user,
+        password=sql_password,
+        port=5432
+    )
+    c = conn.cursor()
+
+    c.execute("""
+            SELECT username, postcontent, messageid, timestamp
+            FROM casterposts
+            WHERE to_tsvector('english', postcontent) @@ to_tsquery(%s)
+            ORDER BY timestamp DESC
+            LIMIT 15;
+            """, [query])
+
+    fetchedPosts = c.fetchall()
+
+    posts = []
+
+    for post in fetchedPosts:
+        c.execute("SELECT pfp, displayname, isveri FROM usercred WHERE username = %s", [post[0]])
+
+        userinfo = c.fetchone()
+        print(userinfo)
+        unixtime = round(float(post[3]))
+        timestamp = datetime.datetime.utcfromtimestamp(unixtime).strftime('%Y-%m-%d %H:%M:%S')
+        if userinfo:
+            if userinfo[2] == "YES":
+                isveri = True
+            else:
+                isveri = False
+
+            post_data = {
+                "pfp": f"{userinfo[0]}",
+                "handle": f"@{post[0]}",
+                "displayName": f"{userinfo[1]}",
+                "isveri": isveri,
+                "postContent": f"{post[1]}",
+                "postId": f"{post[2]}",
+                "timestamp": f"{timestamp}"
+            }
+            posts.append(post_data)
+
+    # posts = [
+        # {
+            # "pfp": "static/img/limeade.png",
+            # "handle": "@lime",
+            # "displayName": "limeade",
+            # "postContent": "This is a test"
+        # },
+        # {
+            # "pfp": "static/img/limeade.png",
+            # "handle": "@lime",
+            # "displayName": "limeade",
+            # "postContent": "comedy is now illegal"
+    #         # }
+    #     # ]
+    return jsonify(posts)
+
+@app.route('/api/searchusers')
+
+@app.route('/api/userposts')
+def user_post_api():
+    user = request.args.get("user")
+    page = int(request.args.get("page"))
+    page = page * 15
+    if user is not None:
+        conn = psycopg2.connect(
+            host=sql_host,
+            dbname=sql_dbname,
+            user=sql_user,
+            password=sql_password,
+            port=5432
+        )
+        c = conn.cursor()
+
+        c.execute("SELECT username, postcontent, messageid, timestamp FROM casterposts WHERE username = %s ORDER BY timestamp DESC LIMIT 15 OFFSET %s", [user, page])
+
+        fetchedPosts = c.fetchall()
+
+        print(fetchedPosts)
+
+        posts = []
+
+        for post in fetchedPosts:
+            print(post)
+            c.execute("SELECT pfp, displayname, isveri FROM usercred WHERE username = %s", [post[0]])
+            userinfo = c.fetchone()
+            print(userinfo)
+            unixtime = round(float(post[3]))
+            timestamp = datetime.datetime.utcfromtimestamp(unixtime).strftime('%Y-%m-%d %H:%M:%S')
+            if userinfo:
+                if userinfo[2] == "YES":
+                    isveri = True
+                else:
+                    isveri = False
+
+                post_data = {
+                    "pfp": f"{userinfo[0]}",
+                    "handle": f"@{post[0]}",
+                    "displayName": f"{userinfo[1]}",
+                    "isveri": isveri,
+                    "postContent": f"{post[1]}",
+                    "postId": f"{post[2]}",
+                    "timestamp": f"{timestamp}"
+                }
+                posts.append(post_data)
+
+        # posts = [
+            # {
+                # "pfp": "static/img/limeade.png",
+                # "handle": "@lime",
+                # "displayName": "limeade",
+                # "postContent": "This is a test"
+            # },
+            # {
+                # "pfp": "static/img/limeade.png",
+                # "handle": "@lime",
+                # "displayName": "limeade",
+                # "postContent": "comedy is now illegal"
+            # }
+        # ]
+        return jsonify(posts)
+
+@app.route('/api/sendpost', methods=['POST', 'GET'])
+def send_post_api():
+    token = request.cookies.get('token')
+    if token is not None:
+        conn = psycopg2.connect(
+            host=sql_host,
+            dbname=sql_dbname,
+            user=sql_user,
+            password=sql_password,
+            port=5432
+        )
+
+        c = conn.cursor()
+
+        c.execute('SELECT username FROM usercred WHERE token = %s', [token])
+
+        username = c.fetchone()[0]
+        messageid = token_generator(20)
+        postContent = request.get_json()['content']
+        timestamp = time.time()
+
+        c.execute('INSERT INTO casterposts (messageid, username, postcontent, timestamp) VALUES (%s, %s, %s, %s)', [messageid, username, convert_mentions_to_links(bleach.linkify(bleach.clean(postContent))), timestamp])
+        conn.commit()
+        conn.close()
+        return jsonify({"message": "Post successfully created", "postId": f"{messageid}"}), 200
+    else:
+        return jsonify({"error": "Unauthorized"}), 401
+
+
+
+
+ALLOWED_EXTENSIONS = {'png'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route("/api/uploadpfp", methods=['POST', 'GET'])
+def uploadpfp():
+    token = request.cookies.get("token")
+
+    conn = psycopg2.connect(
+        host=sql_host,
+        dbname=sql_dbname,
+        user=sql_user,
+        password=sql_password,
+        port=5432
+    )
+
+    c = conn.cursor()
+
+    c.execute('SELECT username FROM usercred WHERE token = %s', [token])
+
+    username = c.fetchone()
+
+    if username is not None:
+        file_str = token_generator(25)
+        if 'file' not in request.files:
+            return jsonify({"message": "No file. Keeping past pfp"}), 200
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"message": "No file. Keeping past pfp"}), 200
+        if file and allowed_file(file.filename):
+            pfp_file_path = os.path.join("static/usrpfp", f"{file_str}.png")
+            file.save(pfp_file_path)
+            c.execute('UPDATE usercred SET pfp = %s WHERE token = %s', [pfp_file_path, token])
+            conn.commit()
+            conn.close()
+            return jsonify({"message": "File successfully uploaded"}), 200
+        else:
+            return jsonify({"error": "Invalid file type"}), 400
+    else:
+        return jsonify({"error": "Unauthorized, invalid token"}), 401
+
+@app.route("/api/updatedisplayname", methods=['POST', 'GET'])
+def updatedisplayname():
+    displayName = request.get_json()['content']
+
+    if len(displayName) > 26:
+        return jsonify({"error": "Display name too big"}), 400
+    if len(displayName) < 2:
+        return jsonify({"error": "Display name too small"}), 400
+
+    token = request.cookies.get("token")
+
+    conn = psycopg2.connect(
+        host=sql_host,
+        dbname=sql_dbname,
+        user=sql_user,
+        password=sql_password,
+        port=5432
+    )
+
+    c = conn.cursor()
+
+    c.execute('SELECT username FROM usercred WHERE token = %s', [token])
+
+    username = c.fetchone()
+
+    if username is not None:
+        c.execute('UPDATE usercred SET displayname = %s WHERE token = %s', [bleach.clean(displayName), token])
+        conn.commit()
+        conn.close()
+        return jsonify({"message": "Display name successfully updated"}), 200
+    else:
+        return jsonify({"error": "Unauthorized, invalid token"}), 401
+
+@app.route("/api/updatebio", methods=['POST', 'GET'])
+def updatebio():
+    bio = request.get_json()['content']
+
+    if len(bio) > 160:
+        return jsonify({"error": "Bio too big"}), 400
+
+    token = request.cookies.get("token")
+
+    conn = psycopg2.connect(
+        host=sql_host,
+        dbname=sql_dbname,
+        user=sql_user,
+        password=sql_password,
+        port=5432
+    )
+
+    c = conn.cursor()
+
+    c.execute('SELECT username FROM usercred WHERE token = %s', [token])
+
+    username = c.fetchone()
+
+    if username is not None:
+        if len(bio) == 0:
+            bio = "We don't know much about this person ):"
+        c.execute('UPDATE usercred SET bio = %s WHERE token = %s', [bleach.linkify(bleach.clean(bio)), token])
+        conn.commit()
+        conn.close()
+        return jsonify({"message": "Bio successfully updated"}), 200
+    else:
+        return jsonify({"error": "Unauthorized, invalid token"}), 401
+
+@app.route('/api/validatesignup', methods=['POST', 'GET'])
+async def validatesignup():
+    username = request.form['username']
+    email = request.form['email']
+    password = request.form['password']
+    confirm_password = request.form['confirm_password']
+
+
+    if password == confirm_password:
+        try:
+            conn = psycopg2.connect(
+                host=sql_host,
+                dbname=sql_dbname,
+                user=sql_user,
+                password=sql_password,
+                port=5432
+            )
+        except:
+            await asyncio.sleep(4)
+            return redirect(request.url)
+        c = conn.cursor()
+        c.execute("SELECT * FROM usercred WHERE username = %s", [str(username.lower())])
+        result = c.fetchone()
+        if result is None:
+            for char in username:
+                if char not in valid_chars:
+                    conn.close()
+                    return redirect(url_for('signup', message="Invalid character(s) in username (Only letters, numbers and underscores)"))
+
+            c.execute("SELECT * FROM usercred WHERE email = %s", [str(email)])
+            result = c.fetchone()
+            if result is None:
+                for char in password:
+                    if char not in valid_pass_chars:
+                        conn.close()
+                        return redirect(url_for('signup', message="Invalid character(s) in password (Only letters, numbers and punctuation)"))
+
+                if len(username) < 2 or len(username) > 22:
+                    conn.close()
+                    return redirect(url_for('signup', message="Username needs to be between 2 - 22 characters"))
+
+                if len(password) < 8 or len(password) > 52:
+                    conn.close()
+                    return redirect(url_for('signup', message="Password need to be between 8 - 52 characters"))
+
+
+                sign_up_token = token_generator()
+                h = hashlib.new("SHA256")
+                h.update(bytes(password, encoding="utf-8"))
+                hashed_password = h.hexdigest()
+                c.execute("INSERT INTO usercred (username, password, token, email, displayname, bio, pfp) VALUES (%s, %s, %s, %s, %s, %s, %s)", [username.lower(), hashed_password, sign_up_token, email, username.lower(), f"Hello, world. I'm {username.lower()}.", "static/img/userdefault.png"])
+                email_token = token_generator()
+                c.execute("INSERT INTO emailtokens (token, email) VALUES (%s, %s)", [email_token, email])
+                conn.commit()
+                conn.close()
+                print(email)
+                email_alert("Welcome to Caster",
+                                        f"To get started on Caster, click this link to verify your email: https://castersocial.com/verifyemail?token={email_token}",
+                                        f"{email}")
+                # system_message(f"{username.lower()} signed up with a invalid email", "error")
+                return redirect(url_for('login', message="Check your email for a verification message"))
+
+            elif result is not None:
+                conn.close()
+                return redirect(url_for('signup', message="Email is taken"))
+
+        elif result is not None:
+            conn.close()
+            return redirect(url_for('signup', message="Username is taken"))
+
+    elif not password == confirm_password:
+        return redirect(url_for('signup', message="Passwords do not match"))
+
+@app.route('/api/validatelogin', methods=['POST', 'GET'])
+async def validatelogin():
+    username = request.form['username']
+    password = request.form['password']
+    h = hashlib.new("SHA256")
+    h.update(bytes(password, encoding="utf-8"))
+    hashed_password = h.hexdigest()
+    try:
+        conn = psycopg2.connect(
+            host=sql_host,
+            dbname=sql_dbname,
+            user=sql_user,
+            password=sql_password,
+            port=5432
+            )
+    except:
+        await asyncio.sleep(4)
+        return redirect(request.url)
+    c = conn.cursor()
+    c.execute("SELECT * FROM usercred WHERE (username = %s OR email = %s) AND password = %s", [str(username), str(username), str(hashed_password)])
+    result = c.fetchone()
+    if result is None:
+        conn.close()
+        return redirect(url_for('login', message="Incorrect Username or Password"))
+
+    settoken = result[2]
+    c.execute("SELECT veriemail FROM usercred WHERE (username = %s OR email = %s)", [str(username), str(username)])
+    result = c.fetchone()
+    if result[0] is None:
+        conn.close()
+        return redirect(url_for('login', message="Please verify your email"))
+
+    resp = make_response(redirect(url_for('home')))
+    resp.set_cookie('token', settoken)
+    conn.close()
+    return resp
+
+@app.route('/verifyemail')
+def verifyemail():
+    try:
+        conn = psycopg2.connect(host=sql_host, dbname=sql_dbname, user=sql_user,
+                                password=sql_password, port=5432)
+    except:
+        time.sleep(4)
+        return redirect(request.url)
+
+    c = conn.cursor()
+    if request.args.get('token') is None:
+        conn.close()
+        return redirect(url_for('login'))
+    else:
+        email_token = request.args.get('token')
+        c.execute("SELECT * FROM emailtokens WHERE token = %s ", [email_token])
+        result = c.fetchone()
+        if result is None:
+            conn.close()
+            return redirect(url_for('login'))
+        else:
+            c.execute("DELETE FROM emailtokens WHERE token = %s", [email_token])
+            c.execute("UPDATE usercred SET veriemail = 'YES' WHERE email = %s", [result[1]])
+            conn.commit()
+            conn.close()
+            return redirect(url_for('login', message="Your email has been verified. You can now log in."))
+
+
+if __name__ == '__main__':
+    app.run(debug=True)

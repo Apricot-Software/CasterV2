@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&family=Sora:wght@100..800&display=swap" rel="stylesheet">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/static/casterbadge.ico">
+    <title>Caster | Login</title>
+    <meta property="og:title" content="caster | login">
+    <meta property="og:description" content="A (WIP) social media platform">
+    <meta property="og:type" content="website">
+</head>
+<style>
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden
+}
+
+.title {
+	font-family: Sora;
+    color: white;
+}
+.subtitle {
+	font-family: Roboto Flex;
+    color: white;
+}
+body{
+	background-color:black;
+}
+.center {
+	text-align: center;
+	margin-top: 100px;
+	visibility: visible;
+}
+.center-mobile {
+	text-align: center;
+	margin-top: 100px;
+	visibility: hidden;
+}
+.uiinputstyle {
+	background-color: grey;
+    color: white;
+	width: 300px;
+	padding: 10px;
+    border-radius: 10px;
+    border: 0;
+    font-size: 19px;
+    font-family: Roboto Flex
+}
+
+.uisubmitstyle {
+	background-color: lightgreen;
+	padding: 10px;
+    border-radius: 10px;
+    border: 0;
+    cursor: pointer;
+    font-size: 19px;
+    font-family: Roboto Flex;
+}
+
+.uisecondarystyle {
+    background-color: white;
+	padding: 10px;
+    border-radius: 10px;
+    border: 0;
+    cursor: pointer;
+    font-size: 19px;
+    font-family: Roboto Flex;
+    padding-right: 10px;
+}
+
+.uispacing {
+	margin-bottom: 10px;
+
+}
+.messagestyle {
+	font-family: Roboto Flex;
+    color: Red
+}
+a:link, a:visited {
+    text-decoration: none;
+    color: lightblue;
+}
+::placeholder {
+   color:    white;
+}
+textarea:focus, input:focus{
+    outline: none;
+}
+.undertext {
+	font-family: Roboto Flex;
+    color: grey;
+    margin: 0
+}
+
+
+</style>
+<body>
+	<div class="center">
+    <h1 class="title"><img width="100" src="/static/img/casterlogo.png"></h1>
+    <form action="/api/validatelogin" method="post">
+        <input class="uispacing uiinputstyle" name="username" placeholder="Username" style="text-transform:lowercase">
+        <br>
+        <input class="uispacing uiinputstyle" name="password" placeholder="Password" type="password">
+        <br>
+        <button class="uisubmitstyle uispacing" type="submit">Login</button>
+    </form>
+        <button onclick="gotosignup()" class="uisecondarystyle">Sign Up</button>
+        <p class="undertext">By accessing this website, you agree to our <a href="/tos">TOS</a></p>
+    <p class="messagestyle">{{message}}</p>
+    </div>
+</body>
+<script>
+    function gotosignup() {
+    window.location = "/signup";
+    }
+</script>
+</html>

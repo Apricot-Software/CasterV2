@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caster</title>
+    <link rel="stylesheet" href="static/style/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <img src="static/img/casterlogo.png" width="50px">
+        </div>
+        <div class="content">
+            <div class="left-bar">
+                <a class="bar-button ab-text" onclick="window.location.href = '/'"><img src="static/img/home.png" class="bar-button-icon"><span class="bar-text">Home</span></a>
+                <a class="bar-button ab-text" onclick="window.location.href = '/profile'"><img src="static/img/profile.png" class="bar-button-icon"><span class="bar-text">Profile</span></a>
+                <a class="bar-button ab-text" onclick="window.location.href = '/search'"><img src="static/img/search.png" class="bar-button-icon"><span class="bar-text">Search</span></a>
+                <a class="bar-button ab-text" onclick="window.location.href = '/create'"><img src="static/img/pencil.png" class="bar-button-icon"><span class="bar-text">Post</span></a>
+                <a class="bar-button ab-text" onclick="window.location.href = '/settings'"><img src="static/img/settings.png" class="bar-button-icon"><span class="bar-text">Settings</span></a>
+            </div>
+            <div class="main-content">
+                <h1 style="padding-left: 10px">Profile</h1>
+                <p class="post-text" style="padding-left: 10px">Display Name</p>
+                <input class="input" id="displayName" type="text" value="{{ displayName }}"><br>
+                <p class="post-text" style="padding-left: 10px">Bio</p>
+                <textarea class="input" id="bioInput" style="width: 400px; height: 100px">{{ bio }}</textarea><br>
+                <p class="post-text" style="padding-left: 10px">Profile Pic</p>
+
+                <label for="pfp-upload" style="cursor: pointer;"><img id="imageDisplay" src="{{ pfp }}" alt="Uploaded Image" style="width: 100px; height:100px; margin: 15px; display: block;" class="user-pfp"></label>
+                <br>
+                <input id="pfp-upload" type="file" oninput="displayImage()" accept="image/png" style="display: none;">
+                <button onclick="uploadSettings()" id="saveButton" class="positiveButton">Save</button>
+                <h1 style="padding-left: 10px">Danger Zone</h1>
+                <button onclick="window.location.href = '/logout'" class="neutralButton">Log Out</button>
+                <button onclick="window.location.href = '/deleteaccount'" class="dangerButton">Delete Account</button>
+                <script src="static/scripts/settings.js"></script>
+            </div>
+            <div class="right-bar">
+                <h1>Coming Soon</h1>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="static/scripts/displaypfp.js"></script>
+
+</html>
