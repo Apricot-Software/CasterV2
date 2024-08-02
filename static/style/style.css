@@ -265,7 +265,14 @@
                 padding-right: 0px;
             }
             .left-bar {
-                width: 40px;
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                order: 0;
+                flex-flow: row;
+                gap: 0px;
+                justify-content: space-evenly;
+                padding: 0;
             }
             .right-bar {
                 display: none
