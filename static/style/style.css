@@ -150,6 +150,7 @@
             font-family: "Roboto Mono", monospace;
             color: white;
             white-space: pre-wrap;
+            overflow-wrap: break-word;
         }
         .post-text a{
             color: green;
