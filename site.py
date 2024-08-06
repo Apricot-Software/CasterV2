@@ -1,8 +1,8 @@
 # Caster V2
 # Developed by Collin Davis
 import time
-from castersecrets import sql_host, sql_dbname, sql_user, sql_password, nr_user, nr_pass
-from flask import Flask, jsonify, render_template, redirect, request, url_for, make_response, session
+from realsecrets import sql_host, sql_dbname, sql_user, sql_password, nr_user, nr_pass
+from flask import Flask, jsonify, render_template, redirect, request, url_for, make_response, session, send_file
 import asyncio
 import psycopg2
 import os
@@ -118,6 +118,14 @@ def convert_mentions_to_links(text, postid, sender_username):
 @app.route('/')
 def home():
     return render_template('caster.html')
+
+@app.route('/robots.txt')
+def robots():
+    return send_file("static/other/robots.txt")
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_file("static/img/castersmall.png")
 
 @app.route('/search')
 def search():
@@ -665,7 +673,6 @@ def send_reply_post_api():
         return jsonify({"error": "Unauthorized"}), 401
 
 
-
 ALLOWED_EXTENSIONS = {'png'}
 
 def allowed_file(filename):
@@ -914,4 +921,4 @@ def verifyemail():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
