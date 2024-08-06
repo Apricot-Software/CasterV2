@@ -1,7 +1,7 @@
 # Caster V2
 # Developed by Collin Davis
 import time
-from realsecrets import sql_host, sql_dbname, sql_user, sql_password, nr_user, nr_pass
+from castersecrets import sql_host, sql_dbname, sql_user, sql_password, nr_user, nr_pass
 from flask import Flask, jsonify, render_template, redirect, request, url_for, make_response, session, send_file
 import asyncio
 import psycopg2
