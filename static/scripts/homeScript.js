@@ -27,7 +27,7 @@ function loadPosts() {
                 const displayName = document.createElement('a');
                 displayName.innerText = post.displayName;
                 displayName.className = 'display-name';
-                displayName.href = `/profile?user=${post.handle}`.replace('@', '')
+                displayName.href = post.handle.replace('@', '')
                 userBar.appendChild(displayName);
 
                 if (post.isveri) {
@@ -76,7 +76,7 @@ function loadPosts() {
                 commentContainer.appendChild(commentIcon);
 
                 const commentCounter = document.createElement('a');
-                commentCounter.innerText = post.comments || '0';
+                commentCounter.innerText = post.replys || '0';
                 commentCounter.className = 'ab-text';
                 commentContainer.appendChild(commentCounter);
 
@@ -130,7 +130,7 @@ function loadSearchPosts() {
                 const displayName = document.createElement('a');
                 displayName.innerText = post.displayName;
                 displayName.className = 'display-name';
-                displayName.href = `/profile?user=${post.handle}`.replace('@', '')
+                displayName.href = post.handle
                 userBar.appendChild(displayName);
 
                 if (post.isveri) {

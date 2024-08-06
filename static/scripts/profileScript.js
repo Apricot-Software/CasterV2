@@ -20,7 +20,7 @@ function loadUserPosts() {
                 const displayName = document.createElement('a');
                 displayName.innerText = post.displayName;
                 displayName.className = 'display-name';
-                displayName.href = `/profile?user=${post.handle}`.replace('@', '')
+                displayName.href = post.handle
                 userBar.appendChild(displayName);
 
                 if (post.isveri) {
