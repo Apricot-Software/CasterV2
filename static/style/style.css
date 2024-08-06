@@ -278,4 +278,7 @@
             .right-bar {
                 display: none
             }
+            ::-webkit-scrollbar {
+                display: none;
+            }
         }

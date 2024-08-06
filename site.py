@@ -1,8 +1,8 @@
 # Caster V2
 # Developed by Collin Davis
 import time
-from realsecrets import sql_host, sql_dbname, sql_user, sql_password, nr_user, nr_pass
-from flask import Flask, jsonify, render_template, redirect, request, url_for, make_response
+from castersecrets import sql_host, sql_dbname, sql_user, sql_password, nr_user, nr_pass
+from flask import Flask, jsonify, render_template, redirect, request, url_for, make_response, session
 import asyncio
 import psycopg2
 import os
@@ -18,6 +18,7 @@ import datetime
 import base64
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = nr_pass
 
 valid_chars = "".join([string.digits, string.ascii_letters, "_"])
 valid_pass_chars = "".join([string.digits, string.ascii_letters, string.punctuation])
@@ -116,28 +117,7 @@ def convert_mentions_to_links(text, postid, sender_username):
 
 @app.route('/')
 def home():
-    token = request.cookies.get('token')
-    print(token)
-    if token is not None:
-        conn = psycopg2.connect(
-            host=sql_host,
-            dbname=sql_dbname,
-            user=sql_user,
-            password=sql_password,
-            port=5432
-        )
-        c = conn.cursor()
-
-        c.execute('SELECT pfp FROM usercred WHERE token = %s', [token])
-
-        try:
-            pfp = c.fetchone()[0]
-        except TypeError:
-            return redirect(url_for('login'))
-
-        return render_template('caster.html', pfp=pfp)
-    else:
-        return redirect(url_for('login'))
+    return render_template('caster.html')
 
 @app.route('/search')
 def search():
@@ -185,7 +165,10 @@ def profile():
 
         c.execute("SELECT username FROM usercred WHERE token = %s", [token])
 
-        profile_user = c.fetchone()[0]
+        try:
+            profile_user = c.fetchone()[0]
+        except TypeError:
+            return redirect(url_for("login"))
 
         return redirect(f"/{profile_user}")
 
@@ -290,7 +273,10 @@ def settings():
     result = c.fetchone()
     print(result)
 
-    displayName = result[0]
+    try:
+        displayName = result[0]
+    except TypeError:
+        return redirect(url_for("login"))
     pfp = result[1]
     bio = result[2]
 
@@ -361,7 +347,7 @@ def signup():
 @app.route('/logout')
 def logout():
     resp = make_response(redirect(url_for("login")))
-    resp.delete_cookie("login")
+    resp.set_cookie('token', '', expires=0)
     return resp
 
 @app.route('/api/posts')
@@ -894,6 +880,7 @@ async def validatelogin():
         return redirect(url_for('login', message="Please verify your email"))
 
     resp = make_response(redirect(url_for('home')))
+    session.permanent = True
     resp.set_cookie('token', settoken)
     conn.close()
     return resp
@@ -927,4 +914,4 @@ def verifyemail():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
