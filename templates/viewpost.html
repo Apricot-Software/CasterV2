@@ -29,6 +29,7 @@
                         <p class="user-bar">
                             <img class="user-pfp" src="{{ pfp }}">
                             <a class="display-name" href="/profile?user={{ handle }}">{{ displayName }}</a>
+                            <img src="static/img/veri.png" style="width: 15px; display: {{ isveri }};">
                             <span class="handle">@{{ handle }} • {{ timestamp }}</span>
                         </p>
                         <p class="post-text">{{ postContent | safe }}</p>
@@ -39,7 +40,7 @@
                             </span>
                             <span>
                                 <img src="static/img/message.png" class="like-icon">
-                                <a class="ab-text">0</a>
+                                <a class="ab-text">{{ replys }}</a>
                             </span>
                             <span>
                                 <img src="static/img/share.png" class="like-icon">
@@ -49,7 +50,7 @@
 
                     </div>
                     <div class="poster-container">
-                        <img class="user-pfp" src="{{ user_pfp }}"><div id="post-input" class="post-input" placeholder="Say something..." oninput="if(this.innerHTML.trim()==='<br>')this.innerHTML=''" contentEditable></div><button class="positiveButton post-text" onclick="sendPost()">Post</button>
+                        <img class="user-pfp" src="{{ user_pfp }}"><div id="post-input" class="post-input" placeholder="Say something..." oninput="if(this.innerHTML.trim()==='<br>')this.innerHTML=''" contentEditable></div><button class="positiveButton post-text" id="sendButton" onclick="sendPost()">Post</button>
                     </div>
 
                 </div>
@@ -191,6 +192,9 @@
 <script>
     function sendPost() {
     const postContent = document.getElementById('post-input').innerText;
+    const sendButton = document.getElementById('sendButton');
+    sendButton.className = "positiveButtonDisabled";
+    sendButton.setAttribute("disabled", "");
 
     if (postContent === '') {
         alert('Post content cannot be empty.');
