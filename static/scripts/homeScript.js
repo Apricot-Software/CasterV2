@@ -16,13 +16,15 @@ function loadPosts() {
                 postContainer.onclick = function(){ window.location.href = `/post?id=${post.postId}`; };
 
                 const userBar = document.createElement('p');
+                const contentDiv = document.createElement('div')
                 userBar.className = 'user-bar';
-                postContainer.appendChild(userBar);
+                contentDiv.appendChild(userBar);
+
 
                 const userpfp = document.createElement('img');
                 userpfp.src = post.pfp;
                 userpfp.className = 'user-pfp';
-                userBar.appendChild(userpfp);
+                postContainer.appendChild(userpfp);
 
                 const displayName = document.createElement('a');
                 displayName.innerText = post.displayName;
@@ -42,15 +44,16 @@ function loadPosts() {
                 handle.innerText = `${post.handle} • ${post.timestamp}`;
                 handle.className = 'handle';
                 userBar.appendChild(handle);
+                postContainer.appendChild(contentDiv);
 
                 const postContent = document.createElement('p');
                 postContent.innerHTML = `${post.postContent}`;
                 postContent.className = 'post-text';
-                postContainer.appendChild(postContent);
+                contentDiv.appendChild(postContent);
 
                 const actionBar = document.createElement('div');
                 actionBar.className = 'post-action-bar';
-                postContainer.appendChild(actionBar);
+                contentDiv.appendChild(actionBar);
 
                 // Like action
                 const likeContainer = document.createElement('span');
@@ -119,18 +122,20 @@ function loadSearchPosts() {
                 postContainer.onclick = function(){ window.location.href = `/post?id=${post.postId}`; };
 
                 const userBar = document.createElement('p');
+                const contentDiv = document.createElement('div')
                 userBar.className = 'user-bar';
-                postContainer.appendChild(userBar);
+                contentDiv.appendChild(userBar);
+
 
                 const userpfp = document.createElement('img');
                 userpfp.src = post.pfp;
                 userpfp.className = 'user-pfp';
-                userBar.appendChild(userpfp);
+                postContainer.appendChild(userpfp);
 
                 const displayName = document.createElement('a');
                 displayName.innerText = post.displayName;
                 displayName.className = 'display-name';
-                displayName.href = post.handle
+                displayName.href = post.handle.replace('@', '')
                 userBar.appendChild(displayName);
 
                 if (post.isveri) {
@@ -145,15 +150,16 @@ function loadSearchPosts() {
                 handle.innerText = `${post.handle} • ${post.timestamp}`;
                 handle.className = 'handle';
                 userBar.appendChild(handle);
+                postContainer.appendChild(contentDiv);
 
                 const postContent = document.createElement('p');
                 postContent.innerHTML = `${post.postContent}`;
                 postContent.className = 'post-text';
-                postContainer.appendChild(postContent);
+                contentDiv.appendChild(postContent);
 
                 const actionBar = document.createElement('div');
                 actionBar.className = 'post-action-bar';
-                postContainer.appendChild(actionBar);
+                contentDiv.appendChild(actionBar);
 
                 // Like action
                 const likeContainer = document.createElement('span');
@@ -179,7 +185,7 @@ function loadSearchPosts() {
                 commentContainer.appendChild(commentIcon);
 
                 const commentCounter = document.createElement('a');
-                commentCounter.innerText = post.comments || '0';
+                commentCounter.innerText = post.replys || '0';
                 commentCounter.className = 'ab-text';
                 commentContainer.appendChild(commentCounter);
 
@@ -199,6 +205,8 @@ function loadSearchPosts() {
 
                 postsFlexBox.appendChild(postContainer);
             });
+
+            isLoading = false;
 
         })
         .catch(error => console.error('Error fetching data:', error));

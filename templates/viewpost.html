@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ handle }} on Caster: {{ postContent }}</title>
+    <title>@{{ handle }} on Caster</title>
     <meta property="og:title" content="{{ handle }} on Caster">
     <meta property="og:description" content="{{ postContent }}">
     <meta property="og:image" content="{{ pfp }}">
@@ -30,34 +30,12 @@
                 <a class="bar-button ab-text" onclick="window.location.href = '/create'"><img src="static/img/pencil.png" class="bar-button-icon"><span class="bar-text">Post</span></a>
                 <a class="bar-button ab-text" onclick="window.location.href = '/settings'"><img src="static/img/settings.png" class="bar-button-icon"><span class="bar-text">Settings</span></a>
             </div>
-            <div class="main-content">
+            <div class="main-content" style="display: flex; flex-direction: column;">
                 <div class="post-flex-box">
-                    <div class="post-container">
-                        <p class="user-bar">
-                            <img class="user-pfp" src="{{ pfp }}">
-                            <a class="display-name" href="/profile?user={{ handle }}">{{ displayName }}</a>
-                            <img src="static/img/veri.png" style="width: 15px; display: {{ isveri }};">
-                            <span class="handle">@{{ handle }} • {{ timestamp }}</span>
-                        </p>
-                        <p class="post-text">{{ postContent | safe }}</p>
-                        <div class="post-action-bar">
-                            <span>
-                                <img src="static/img/like-unselect.png" class="like-icon">
-                                <a class="ab-text">0</a>
-                            </span>
-                            <span>
-                                <img src="static/img/message.png" class="like-icon">
-                                <a class="ab-text">{{ replys }}</a>
-                            </span>
-                            <span>
-                                <img src="static/img/share.png" class="like-icon">
-                                <a class="ab-text">0</a>
-                            </span>
-                        </div>
+                    <div class="post-flex-box" id="reply-chain"></div>
 
-                    </div>
-                    <div class="poster-container">
-                        <img class="user-pfp" src="{{ user_pfp }}"><div id="post-input" class="post-input" placeholder="Say something..." oninput="if(this.innerHTML.trim()==='<br>')this.innerHTML=''" contentEditable></div><button class="positiveButton post-text" id="sendButton" onclick="sendPost()">Post</button>
+                    <div class="poster-container" style="gap: 0;">
+                        <img class="user-pfp" src="{{ user_pfp }}" style="margin: 0px;"><div id="post-input" class="post-input" placeholder="Say something..." oninput="if(this.innerHTML.trim()==='<br>')this.innerHTML=''" contentEditable></div><button class="positiveButton post-text" id="sendButton" onclick="sendPost()">Post</button>
                     </div>
 
                 </div>
@@ -65,125 +43,108 @@
                 </div>
                 <div class="post-flex-box">
                     <div class="post-container">
-                        <p class="user-bar">
-                            <img class="user-pfp" src="static/img/placeholder.jpg">
-                            <a class="display-name" href="/profile?user={{ handle }}"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"></a>
-                            <span class="handle"></span>
-                        </p>
-                        <p class="post-text"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"><br><img class="user-pfp" style="width: 200px; height: 10px" src="static/img/placeholder.jpg"></p>
-                        <div class="post-action-bar">
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
+                        <img class="user-pfp" src="static/img/placeholder.jpg">
+                        <div style="width: calc(100% - 60px);">
+                            <p class="user-bar">
+                                <a class="display-name" href="/profile?user={{ handle }}"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"></a>
+                                <span class="handle"></span>
+                            </p>
+                            <p class="post-text"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"><br><img class="user-pfp" style="width: 200px; height: 10px" src="static/img/placeholder.jpg"></p>
+                            <div class="post-action-bar">
+                                <span>
+                                    <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
+                                    <a class="ab-text"></a>
+                                </span>
+                                <span>
+                                    <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
+                                    <a class="ab-text"></a>
+                                </span>
+                                <span>
+                                    <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
+                                    <a class="ab-text"></a>
+                                </span>
+                            </div>
                         </div>
 
                     </div>
                 </div>
                 <div class="post-flex-box">
                     <div class="post-container">
-                        <p class="user-bar">
-                            <img class="user-pfp" src="static/img/placeholder.jpg">
-                            <a class="display-name" href="/profile?user={{ handle }}"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"></a>
-                            <span class="handle"></span>
-                        </p>
-                        <p class="post-text"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"><br><img class="user-pfp" style="width: 200px; height: 10px" src="static/img/placeholder.jpg"></p>
-                        <div class="post-action-bar">
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
+                        <img class="user-pfp" src="static/img/placeholder.jpg">
+                        <div style="width: calc(100% - 60px);">
+                            <p class="user-bar">
+                                <a class="display-name" href="/profile?user={{ handle }}"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"></a>
+                                <span class="handle"></span>
+                            </p>
+                            <p class="post-text"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"><br><img class="user-pfp" style="width: 200px; height: 10px" src="static/img/placeholder.jpg"></p>
+                            <div class="post-action-bar">
+                                <span>
+                                    <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
+                                    <a class="ab-text"></a>
+                                </span>
+                                <span>
+                                    <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
+                                    <a class="ab-text"></a>
+                                </span>
+                                <span>
+                                    <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
+                                    <a class="ab-text"></a>
+                                </span>
+                            </div>
                         </div>
 
                     </div>
                 </div>
                 <div class="post-flex-box">
                     <div class="post-container">
-                        <p class="user-bar">
-                            <img class="user-pfp" src="static/img/placeholder.jpg">
-                            <a class="display-name" href="/profile?user={{ handle }}"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"></a>
-                            <span class="handle"></span>
-                        </p>
-                        <p class="post-text"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"><br><img class="user-pfp" style="width: 200px; height: 10px" src="static/img/placeholder.jpg"></p>
-                        <div class="post-action-bar">
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
+                        <img class="user-pfp" src="static/img/placeholder.jpg">
+                        <div style="width: calc(100% - 60px);">
+                            <p class="user-bar">
+                                <a class="display-name" href="/profile?user={{ handle }}"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"></a>
+                                <span class="handle"></span>
+                            </p>
+                            <p class="post-text"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"><br><img class="user-pfp" style="width: 200px; height: 10px" src="static/img/placeholder.jpg"></p>
+                            <div class="post-action-bar">
+                                <span>
+                                    <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
+                                    <a class="ab-text"></a>
+                                </span>
+                                <span>
+                                    <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
+                                    <a class="ab-text"></a>
+                                </span>
+                                <span>
+                                    <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
+                                    <a class="ab-text"></a>
+                                </span>
+                            </div>
                         </div>
 
                     </div>
                 </div>
                 <div class="post-flex-box">
                     <div class="post-container">
-                        <p class="user-bar">
-                            <img class="user-pfp" src="static/img/placeholder.jpg">
-                            <a class="display-name"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"></a>
-                            <span class="handle"></span>
-                        </p>
-                        <p class="post-text"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"><br><img class="user-pfp" style="width: 200px; height: 10px" src="static/img/placeholder.jpg"></p>
-                        <div class="post-action-bar">
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="post-flex-box">
-                    <div class="post-container">
-                        <p class="user-bar">
-                            <img class="user-pfp" src="static/img/placeholder.jpg">
-                            <a class="display-name" href="/profile?user={{ handle }}"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"></a>
-                            <span class="handle"></span>
-                        </p>
-                        <p class="post-text"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"><br><img class="user-pfp" style="width: 200px; height: 10px" src="static/img/placeholder.jpg"></p>
-                        <div class="post-action-bar">
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
-                            <span>
-                                <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
-                                <a class="ab-text"></a>
-                            </span>
+                        <img class="user-pfp" src="static/img/placeholder.jpg">
+                        <div style="width: calc(100% - 60px);">
+                            <p class="user-bar">
+                                <a class="display-name" href="/profile?user={{ handle }}"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"></a>
+                                <span class="handle"></span>
+                            </p>
+                            <p class="post-text"><img class="user-pfp" style="width: 400px; height: 10px" src="static/img/placeholder.jpg"><br><img class="user-pfp" style="width: 200px; height: 10px" src="static/img/placeholder.jpg"></p>
+                            <div class="post-action-bar">
+                                <span>
+                                    <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
+                                    <a class="ab-text"></a>
+                                </span>
+                                <span>
+                                    <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
+                                    <a class="ab-text"></a>
+                                </span>
+                                <span>
+                                    <img src="static/img/placeholder.jpg" class="like-icon" style="border-radius: 50px;">
+                                    <a class="ab-text"></a>
+                                </span>
+                            </div>
                         </div>
 
                     </div>
@@ -191,7 +152,8 @@
                 <div class="spacer"></div>
             </div>
             <div class="right-bar">
-                <h1>Coming Soon</h1>
+                <h1 style="padding-left: 25px">Relevent Users</h1>
+                <div style="width: 300px" class="post-flex-box" id="reply-chain-users"></div>
             </div>
         </div>
     </div>
@@ -205,6 +167,8 @@
 
     if (postContent === '') {
         alert('Post content cannot be empty.');
+        sendButton.className = "positiveButton";
+        sendButton.removeAttribute("disabled");
         return
     }
 
@@ -218,6 +182,7 @@
     .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok');
+            window.location.href = '/login';
         }
         return response.json();
     })
@@ -228,6 +193,14 @@
             console.error('Post ID not found in response');
         }
     })
+}
+function scrollToDiv(divId) {
+    const targetDiv = document.getElementById(divId);
+    if (targetDiv) {
+        targetDiv.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        console.error(`Element with ID ${divId} not found`);
+    }
 }
 let currentPage = -1;
 let isLoading = false;
@@ -247,13 +220,15 @@ function loadPosts() {
                 postContainer.onclick = function(){ window.location.href = `/post?id=${post.postId}`; };
 
                 const userBar = document.createElement('p');
+                const contentDiv = document.createElement('div')
                 userBar.className = 'user-bar';
-                postContainer.appendChild(userBar);
+                contentDiv.style.width = "calc(100% - 60px)"
+                contentDiv.appendChild(userBar);
 
                 const userpfp = document.createElement('img');
                 userpfp.src = post.pfp;
                 userpfp.className = 'user-pfp';
-                userBar.appendChild(userpfp);
+                postContainer.appendChild(userpfp);
 
                 const displayName = document.createElement('a');
                 displayName.innerText = post.displayName;
@@ -273,15 +248,16 @@ function loadPosts() {
                 handle.innerText = `${post.handle} • ${post.timestamp}`;
                 handle.className = 'handle';
                 userBar.appendChild(handle);
+                postContainer.appendChild(contentDiv);
 
                 const postContent = document.createElement('p');
                 postContent.innerHTML = `${post.postContent}`;
                 postContent.className = 'post-text';
-                postContainer.appendChild(postContent);
+                contentDiv.appendChild(postContent);
 
                 const actionBar = document.createElement('div');
                 actionBar.className = 'post-action-bar';
-                postContainer.appendChild(actionBar);
+                contentDiv.appendChild(actionBar);
 
                 // Like action
                 const likeContainer = document.createElement('span');
@@ -307,7 +283,7 @@ function loadPosts() {
                 commentContainer.appendChild(commentIcon);
 
                 const commentCounter = document.createElement('a');
-                commentCounter.innerText = post.comments || '0';
+                commentCounter.innerText = post.replys || '0';
                 commentCounter.className = 'ab-text';
                 commentContainer.appendChild(commentCounter);
 
@@ -333,7 +309,196 @@ function loadPosts() {
         })
         .catch(error => console.error('Error fetching data:', error));
 }
-    document.addEventListener('DOMContentLoaded', loadPosts);
+function loadReplyChainUsers() {
+    fetch(`/api/replychain/users?id={{ post_id }}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(users => {
+            const postsFlexBox = document.getElementById('reply-chain-users');
+            if (!postsFlexBox) {
+                console.error('Element with ID reply-chain-users not found. lime messed something up again.');
+                return;
+            }
+
+            postsFlexBox.innerHTML = ''; // Clear any existing content
+
+            users.forEach((user, index) => {
+                const userContainer = document.createElement('div');
+                userContainer.className = 'post-container';
+                userContainer.style.border = "none";
+                userContainer.style.paddingTop = "0px";
+                userContainer.style.paddingBottom = "0px";
+                userContainer.onclick = function() { window.location.href = `/profile?user=${user.handle}`.replace('@', ''); };
+
+                const userBar = document.createElement('p');
+                userBar.className = 'user-bar';
+
+                const userPfp = document.createElement('img');
+                userPfp.src = user.pfp;
+                userPfp.className = 'user-pfp';
+                userContainer.appendChild(userPfp);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.style.width = "calc(100% - 60px)";
+                userContainer.appendChild(contentDiv);
+                contentDiv.appendChild(userBar);
+
+                const displayName = document.createElement('a');
+                displayName.innerText = user.displayName;
+                displayName.className = 'display-name';
+                displayName.href = `/profile?user=${user.handle}`;
+                userBar.appendChild(displayName);
+
+                if (user.isveri) {
+                   const checkmark = document.createElement('img');
+                   checkmark.src = 'static/img/veri.png';
+                   checkmark.style.width = '15px';
+                   userBar.appendChild(checkmark);
+                };
+
+                const userHandle = document.createElement('span');
+                userHandle.innerText = user.handle;
+                userHandle.className = 'handle';
+                userBar.appendChild(userHandle);
+
+                const userBio = document.createElement('p');
+                userBio.innerHTML = user.bio;
+                userBio.className = 'post-text';
+                contentDiv.appendChild(userBio);
+
+                postsFlexBox.appendChild(userContainer);
+            });
+        })
+        .catch(error => console.error('Error fetching data:', error));
+}
+function loadReplyChain() {
+    let viewPostId;
+
+    currentPage++;
+    fetch(`/api/replychain?id={{ post_id }}`)
+        .then(response => response.json())
+        .then(posts => {
+            const postsFlexBox = document.getElementById('reply-chain');
+            posts.forEach((post, index) => {
+                const postContainer = document.createElement('div');
+                postContainer.className = 'post-container';
+                postContainer.id = `post-${post.postId}`;
+                if (index < posts.length - 1) {
+                    postContainer.style.border = "none";
+                } else {
+                    viewPostId = `post-${post.postId}`;
+                }
+                postContainer.onclick = function(){ window.location.href = `/post?id=${post.postId}`; };
+
+                const userBar = document.createElement('p');
+                const contentDiv = document.createElement('div')
+                contentDiv.style.width = "calc(100% - 60px)"
+                userBar.className = 'user-bar';
+                contentDiv.appendChild(userBar);
+
+                const userpfp = document.createElement('img');
+                userpfp.src = post.pfp;
+                userpfp.className = 'user-pfp';
+                postContainer.appendChild(userpfp);
+
+                if (index < posts.length - 1) {
+                    const postconline = document.createElement('hr');
+                    postContainer.appendChild(postconline);
+                }
+
+                const displayName = document.createElement('a');
+                displayName.innerText = post.displayName;
+                displayName.className = 'display-name';
+                displayName.href = `/profile?user=${post.handle}`.replace('@', '')
+                userBar.appendChild(displayName);
+
+                if (post.isveri) {
+                   const checkmark = document.createElement('img');
+                   checkmark.src = 'static/img/veri.png';
+                   checkmark.style.width = '15px';
+                   userBar.appendChild(checkmark);
+                };
+
+
+                const handle = document.createElement('span');
+                handle.innerText = `${post.handle} • ${post.timestamp}`;
+                handle.className = 'handle';
+                userBar.appendChild(handle);
+                postContainer.appendChild(contentDiv);
+
+                const postContent = document.createElement('p');
+                postContent.innerHTML = `${post.postContent}`;
+                postContent.className = 'post-text';
+                contentDiv.appendChild(postContent);
+
+                const actionBar = document.createElement('div');
+                actionBar.className = 'post-action-bar';
+                contentDiv.appendChild(actionBar);
+
+                // Like action
+                const likeContainer = document.createElement('span');
+                actionBar.appendChild(likeContainer);
+
+                const likeIcon = document.createElement('img');
+                likeIcon.src = 'static/img/like-unselect.png';
+                likeIcon.className = 'like-icon';
+                likeContainer.appendChild(likeIcon);
+
+                const likeCounter = document.createElement('a');
+                likeCounter.innerText = post.likes || '0';
+                likeCounter.className = 'ab-text';
+                likeContainer.appendChild(likeCounter);
+
+                // Comment action
+                const commentContainer = document.createElement('span');
+                actionBar.appendChild(commentContainer);
+
+                const commentIcon = document.createElement('img');
+                commentIcon.src = 'static/img/message.png';
+                commentIcon.className = 'like-icon';
+                commentContainer.appendChild(commentIcon);
+
+                const commentCounter = document.createElement('a');
+                commentCounter.innerText = post.replys || '0';
+                commentCounter.className = 'ab-text';
+                commentContainer.appendChild(commentCounter);
+
+                // Share action
+                const shareContainer = document.createElement('span');
+                actionBar.appendChild(shareContainer);
+
+                const shareIcon = document.createElement('img');
+                shareIcon.src = 'static/img/share.png';
+                shareIcon.className = 'like-icon';
+                shareContainer.appendChild(shareIcon);
+
+                const shareCounter = document.createElement('a');
+                shareCounter.innerText = post.shares || '0';
+                shareCounter.className = 'ab-text';
+                shareContainer.appendChild(shareCounter);
+
+                postsFlexBox.appendChild(postContainer);
+            });
+
+            if (viewPostId) {
+                scrollToDiv(viewPostId);
+            }
+
+        })
+        .catch(error => console.error('Error fetching data:', error));
+
+}
+    document.addEventListener('DOMContentLoaded',() => {
+        loadPosts();
+        loadReplyChainUsers();
+        loadReplyChain();
+
+
+    });
 
     const mainContent = document.querySelector('.main-content');
 

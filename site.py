@@ -434,8 +434,8 @@ async def post_api():
 @app.route('/api/searchposts')
 async def post_search_api():
     query = request.args.get("query")
-    page = int(request.args.get("page"))
-    page = page * 15
+    # page = int(request.args.get("page"))
+    # page = page * 15
     conn = psycopg2.connect(
         host=sql_host,
         dbname=sql_dbname,
@@ -444,13 +444,21 @@ async def post_search_api():
         port=5432
     )
     c = conn.cursor()
-
     c.execute("""
-            SELECT username, postcontent, messageid, timestamp
-            FROM casterposts
-            WHERE to_tsvector('english', postcontent) @@ to_tsquery(%s)
-            ORDER BY timestamp DESC
-            LIMIT 15;
+        SELECT
+            p.username,
+            p.postcontent,
+            p.messageid,
+            p.timestamp,
+            (SELECT COUNT(*) FROM casterposts WHERE refpostid = p.messageid) AS refpost_count
+        FROM
+            casterposts p
+        WHERE
+            to_tsvector('english', p.postcontent) @@ to_tsquery(%s)
+        ORDER BY 
+            timestamp 
+            DESC 
+            LIMIT 15
             """, [query])
 
     fetchedPosts = c.fetchall()
@@ -477,7 +485,8 @@ async def post_search_api():
                 "isveri": isveri,
                 "postContent": f"{post[1]}",
                 "postId": f"{post[2]}",
-                "timestamp": f"{timestamp}"
+                "timestamp": f"{timestamp}",
+                "replys": f"{post[4]}"
             }
             posts.append(post_data)
 
@@ -512,12 +521,21 @@ async def reply_posts_api():
     c = conn.cursor()
 
     c.execute("""
-            SELECT username, postcontent, messageid, timestamp
-            FROM casterposts
-            WHERE refpostid=%s
-            ORDER BY timestamp DESC
+        SELECT
+            p.username,
+            p.postcontent,
+            p.messageid,
+            p.timestamp,
+            (SELECT COUNT(*) FROM casterposts WHERE refpostid = p.messageid) AS refpost_count
+        FROM
+            casterposts p
+        WHERE
+            refpostid=%s
+        ORDER BY 
+            timestamp 
+            DESC 
             LIMIT 15
-            OFFSET %s;
+            OFFSET %s
             """, [refid, page])
 
     fetchedPosts = c.fetchall()
@@ -544,7 +562,8 @@ async def reply_posts_api():
                 "isveri": isveri,
                 "postContent": f"{post[1]}",
                 "postId": f"{post[2]}",
-                "timestamp": f"{timestamp}"
+                "timestamp": f"{timestamp}",
+                "replys": f"{post[4]}"
             }
             posts.append(post_data)
 
@@ -614,6 +633,110 @@ def user_post_api():
                 posts.append(post_data)
 
         return jsonify(posts)
+
+@app.route('/api/replychain')
+def reply_chain_api():
+    id = request.args.get("id")
+    conn = psycopg2.connect(
+        host=sql_host,
+        dbname=sql_dbname,
+        user=sql_user,
+        password=sql_password,
+        port=5432
+    )
+    c = conn.cursor()
+
+    global buildLoop
+    buildLoop = True
+
+    posts = []
+
+    while buildLoop:
+        c.execute("SELECT username, postcontent, messageid, timestamp, refpostid FROM casterposts WHERE messageid = %s", [id])
+
+        post = c.fetchone()
+
+        print(post)
+
+
+
+        c.execute("SELECT pfp, displayname, isveri FROM usercred WHERE username = %s", [post[0]])
+        userinfo = c.fetchone()
+        print(userinfo)
+        unixtime = round(float(post[3]))
+        timestamp = datetime.datetime.utcfromtimestamp(unixtime).strftime('%Y-%m-%d %H:%M:%S')
+        if userinfo:
+            if userinfo[2] == "YES":
+                isveri = True
+            else:
+                isveri = False
+
+            post_data = {
+                "pfp": f"{userinfo[0]}",
+                "handle": f"@{post[0]}",
+                "displayName": f"{userinfo[1]}",
+                "isveri": isveri,
+                "postContent": f"{post[1]}",
+                "postId": f"{post[2]}",
+                "timestamp": f"{timestamp}"
+            }
+            posts.insert(0, post_data)
+            if post[4] is not None:
+                buildLoop = True
+                id = post[4]
+            else:
+                buildLoop = False
+                print(posts)
+
+    return jsonify(posts)
+
+@app.route('/api/replychain/users')
+def reply_chain_users_api():
+    id = request.args.get("id")
+    conn = psycopg2.connect(
+        host=sql_host,
+        dbname=sql_dbname,
+        user=sql_user,
+        password=sql_password,
+        port=5432
+    )
+    c = conn.cursor()
+
+    buildLoop = True
+    users = []
+    seen_usernames = set()
+
+    while buildLoop:
+        c.execute("SELECT username, refpostid FROM casterposts WHERE messageid = %s", [id])
+        post = c.fetchone()
+
+        if post:
+            username = post[0]
+            if username not in seen_usernames:
+                c.execute("SELECT pfp, bio, displayname, isveri FROM usercred WHERE username = %s", [username])
+                userinfo = c.fetchone()
+                if userinfo[3] == "YES":
+                    isveri = True
+                else:
+                    isveri = False
+                if userinfo:
+                    user_info = {
+                        "displayName": userinfo[2],
+                        "handle": f"@{username}",
+                        "isveri": isveri,
+                        "pfp": userinfo[0],
+                        "bio": userinfo[1]
+                    }
+                    users.insert(0 ,user_info)
+                    seen_usernames.add(username)
+            if post[1] is not None:
+                id = post[1]
+            else:
+                buildLoop = False
+        else:
+            buildLoop = False
+
+    return jsonify(users)
 
 @app.route('/api/sendpost', methods=['POST', 'GET'])
 def send_post_api():

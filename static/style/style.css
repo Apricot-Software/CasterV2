@@ -2,6 +2,10 @@
             margin: 0;
             font-family: Arial, sans-serif;
             overflow: hidden;
+            height: 100vh;
+        }
+        html {
+            height: 100vh;
         }
         textarea:focus, input:focus, div:focus{
             outline: none;
@@ -29,14 +33,16 @@
         }
 
         .left-bar {
+            z-index: 2;
             display: flex;
             align-items: flex-end;
             flex-direction: column;
             background-color: #000000;
             padding: 1em;
-            width: 25%;
+            width: 30%;
             border-right: solid;
             border-color: #214d26;
+            height: calc(100vh - 115px);
             border-width: 1px;
             transition: width 0.5s ease, height 0.5s ease;
         }
@@ -65,22 +71,24 @@
         .right-bar {
             display: flex;
             background-color: #000000;
-            width: 25%;
+            width: 30%;
             border-left: solid;
             border-color: #214d26;
             border-width: 1px;
             transition: width 0.5s ease, height 0.5s ease;
             flex-flow: column;
+            height: calc(100vh - 83px);
             overflow: scroll;
-            height: 100vh;
             scrollbar-color: #ffff #0f1810;
+            overflow-x: hidden;
         }
 
         .main-content {
             background-color: #000000;
             flex: 1;
             overflow: scroll;
-            height: 100vh;
+            overflow-x: hidden;
+            height: calc(100vh - 83px);
             scrollbar-color: #ffff #000000;
             overflow-anchor: none;
         }
@@ -98,9 +106,10 @@
             white-space: nowrap;
         }
         .spacer {
-            padding-bottom: 60px;
+            padding-bottom: 250px;
         }
         .post-container {
+            display: flex;
             border-bottom: solid;
             padding: 20px;
             padding-top: 20px;
@@ -126,8 +135,10 @@
             gap: 5px
         }
         .user-pfp {
-            width: 40px;
-            height: 40px;
+            z-index: 1;
+            margin-right: 10px;
+            width: 50px;
+            height: 50px;
             border-radius: 50px;
         }
         .like-icon {
@@ -147,6 +158,7 @@
             font-weight: 800;
         }
         .post-text {
+            margin-top: 5px;
             font-family: "Roboto Mono", monospace;
             color: white;
             white-space: pre-wrap;
@@ -255,6 +267,14 @@
         a:link {
             text-decoration: none;
         }
+        hr {
+            position: relative;
+            right: 36px;
+            top: 60px;
+            z-index: 0;
+            height: calc(100% - 35px);
+            margin: 0;
+        }
         @media (max-width: 1000px) {
             .bar-text {
                 display: none
@@ -274,6 +294,7 @@
                 gap: 0px;
                 justify-content: space-evenly;
                 padding: 0;
+                height: 50px;
             }
             .right-bar {
                 display: none

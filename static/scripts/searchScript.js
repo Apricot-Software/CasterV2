@@ -76,7 +76,7 @@ function loadSearchPosts() {
                 commentContainer.appendChild(commentIcon);
 
                 const commentCounter = document.createElement('a');
-                commentCounter.innerText = post.comments || '0';
+                commentCounter.innerText = post.replys || '0';
                 commentCounter.className = 'ab-text';
                 commentContainer.appendChild(commentCounter);
 
