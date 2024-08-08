@@ -3,3 +3,4 @@ flask
 flask[async]
 bleach
 psycopg2-binary
+gunicorn
