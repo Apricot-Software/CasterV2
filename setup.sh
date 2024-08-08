@@ -20,6 +20,6 @@ else
 fi
 
 # Deactivate the virtual environment
-deactivate
+python setup.py
 
 echo "Setup complete!"
