@@ -52,7 +52,7 @@ def email_alert(subject, body, to):
 
         server.quit()
     except Exception as e:
-        print(e)
+        
 
 
 
@@ -77,7 +77,7 @@ def convert_mentions_to_links(text, postid, sender_username):
 
         with open('static/img/castersmall.png', 'rb') as img_file:
             img_base64 = base64.b64encode(img_file.read()).decode('utf-8')
-            print(img_base64)
+            
 
         body = f"""
         <html>
@@ -130,7 +130,7 @@ def favicon():
 @app.route('/search')
 def search():
     token = request.cookies.get('token')
-    print(token)
+    
     if token is not None:
         conn = psycopg2.connect(
             host=sql_host,
@@ -242,7 +242,7 @@ def smol_profile(profile_user):
 @app.route('/create')
 def create():
     token = request.cookies.get('token')
-    print(token)
+    
     if token is not None:
         conn = psycopg2.connect(
             host=sql_host,
@@ -256,7 +256,7 @@ def create():
         c.execute('SELECT pfp FROM usercred WHERE token = %s', [token])
 
         pfp = c.fetchone()[0]
-        print(pfp)
+        
         if pfp is None:
             return redirect(url_for('login'))
 
@@ -279,7 +279,7 @@ def settings():
 
     c.execute("SELECT displayname, pfp, bio FROM public.usercred WHERE token = %s", [token])
     result = c.fetchone()
-    print(result)
+    
 
     try:
         displayName = result[0]
@@ -311,7 +311,7 @@ def post():
 
     c.execute("SELECT pfp, displayname, isveri FROM usercred WHERE username = %s", [fetchedPost[0]])
     userinfo = c.fetchone()
-    print(userinfo)
+    
     unixtime = round(float(fetchedPost[3]))
     timestamp = datetime.datetime.utcfromtimestamp(unixtime).strftime('%Y-%m-%d %H:%M:%S')
     if userinfo[2] == "YES":
@@ -325,7 +325,7 @@ def post():
         postContent = f"{fetchedPost[1]}"
         postId = f"{fetchedPost[2]}"
         replys = f"{str(fetchedPost[4])}"
-        print()
+        
 
     c.execute("SELECT pfp FROM usercred WHERE token = %s", [token])
 
@@ -394,7 +394,7 @@ async def post_api():
         c.execute("SELECT pfp, displayname, isveri FROM usercred WHERE username = %s", [post[0]])
 
         userinfo = c.fetchone()
-        print(userinfo)
+        
         unixtime = round(float(post[3]))
         timestamp = datetime.datetime.utcfromtimestamp(unixtime).strftime('%Y-%m-%d %H:%M:%S')
         if userinfo:
@@ -469,7 +469,7 @@ async def post_search_api():
         c.execute("SELECT pfp, displayname, isveri FROM usercred WHERE username = %s", [post[0]])
 
         userinfo = c.fetchone()
-        print(userinfo)
+        
         unixtime = round(float(post[3]))
         timestamp = datetime.datetime.utcfromtimestamp(unixtime).strftime('%Y-%m-%d %H:%M:%S')
         if userinfo:
@@ -546,7 +546,7 @@ async def reply_posts_api():
         c.execute("SELECT pfp, displayname, isveri FROM usercred WHERE username = %s", [post[0]])
 
         userinfo = c.fetchone()
-        print(userinfo)
+        
         unixtime = round(float(post[3]))
         timestamp = datetime.datetime.utcfromtimestamp(unixtime).strftime('%Y-%m-%d %H:%M:%S')
         if userinfo:
@@ -604,15 +604,15 @@ def user_post_api():
 
         fetchedPosts = c.fetchall()
 
-        print(fetchedPosts)
+        
 
         posts = []
 
         for post in fetchedPosts:
-            print(post)
+            
             c.execute("SELECT pfp, displayname, isveri FROM usercred WHERE username = %s", [post[0]])
             userinfo = c.fetchone()
-            print(userinfo)
+            
             unixtime = round(float(post[3]))
             timestamp = datetime.datetime.utcfromtimestamp(unixtime).strftime('%Y-%m-%d %H:%M:%S')
             if userinfo:
@@ -656,13 +656,13 @@ def reply_chain_api():
 
         post = c.fetchone()
 
-        print(post)
+        
 
 
 
         c.execute("SELECT pfp, displayname, isveri FROM usercred WHERE username = %s", [post[0]])
         userinfo = c.fetchone()
-        print(userinfo)
+        
         unixtime = round(float(post[3]))
         timestamp = datetime.datetime.utcfromtimestamp(unixtime).strftime('%Y-%m-%d %H:%M:%S')
         if userinfo:
@@ -686,7 +686,7 @@ def reply_chain_api():
                 id = post[4]
             else:
                 buildLoop = False
-                print(posts)
+                
 
     return jsonify(posts)
 
@@ -959,7 +959,7 @@ async def validatesignup():
                 c.execute("INSERT INTO emailtokens (token, email) VALUES (%s, %s)", [email_token, email])
                 conn.commit()
                 conn.close()
-                print(email)
+                
                 email_alert("Welcome to Caster",
                                         f"To get started on Caster, click this link to verify your email: https://castersocial.com/verifyemail?token={email_token}",
                                         f"{email}")
