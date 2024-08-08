@@ -1,0 +1,5 @@
+beautifulsoup4
+flask
+flask[async]
+bleach
+psycopg2-binary
