@@ -350,7 +350,7 @@ function loadReplyChainUsers() {
                 const displayName = document.createElement('a');
                 displayName.innerText = user.displayName;
                 displayName.className = 'display-name';
-                displayName.href = `/profile?user=${user.handle}`;
+                displayName.href = `/profile?user=${user.handle}`.replace('@', '');
                 userBar.appendChild(displayName);
 
                 if (user.isveri) {
