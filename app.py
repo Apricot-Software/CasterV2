@@ -38,20 +38,18 @@ def remove_html_tags(text):
 
 
 def email_alert(subject, body, to):
-    try:
-        msg = EmailMessage()
-        msg.set_content(body, subtype='html')
-        msg['subject'] = subject
-        msg['to'] = to
-        msg['from'] = nr_user
+    msg = EmailMessage()
+    msg.set_content(body, subtype='html')
+    msg['subject'] = subject
+    msg['to'] = to
+    msg['from'] = nr_user
 
-        server = smtplib.SMTP("smtp.forwardemail.net", 587)
-        server.starttls()
-        server.login(nr_user, nr_pass)
-        server.send_message(msg)
+    server = smtplib.SMTP("smtp.forwardemail.net", 587)
+    server.starttls()
+    server.login(nr_user, nr_pass)
+    server.send_message(msg)
 
-        server.quit()
-    except Exception as e:
+    server.quit()
         
 
 
