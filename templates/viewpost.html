@@ -30,7 +30,7 @@
                 <a class="bar-button ab-text" onclick="window.location.href = '/create'"><img src="static/img/pencil.png" class="bar-button-icon"><span class="bar-text">Post</span></a>
                 <a class="bar-button ab-text" onclick="window.location.href = '/settings'"><img src="static/img/settings.png" class="bar-button-icon"><span class="bar-text">Settings</span></a>
             </div>
-            <div class="main-content" style="display: flex; flex-direction: column;">
+            <div class="main-content" id="main-content" style="display: flex; flex-direction: column;">
                 <div class="post-flex-box">
                     <div class="post-flex-box" id="reply-chain"></div>
 
@@ -194,12 +194,22 @@
         }
     })
 }
-function scrollToDiv(divId) {
+function scrollToDiv(divId, containerId) {
     const targetDiv = document.getElementById(divId);
-    if (targetDiv) {
-        targetDiv.scrollIntoView({ behavior: 'smooth' });
+    const container = document.getElementById(containerId);
+
+    if (targetDiv && container) {
+        // Calculate the top position relative to the container
+        const containerRect = container.getBoundingClientRect();
+        const targetRect = targetDiv.getBoundingClientRect();
+
+        // Adjust the scroll position within the container
+        container.scrollTo({
+            top: targetRect.top - containerRect.top + container.scrollTop,
+            behavior: 'smooth'
+        });
     } else {
-        console.error(`Element with ID ${divId} not found`);
+        console.error(`Element with ID ${divId} or container with ID ${containerId} not found`);
     }
 }
 let currentPage = -1;
@@ -485,7 +495,7 @@ function loadReplyChain() {
             });
 
             if (viewPostId) {
-                scrollToDiv(viewPostId);
+                scrollToDiv(viewPostId, 'main-content');
             }
 
         })
