@@ -17,6 +17,7 @@ function loadPosts() {
 
                 const userBar = document.createElement('p');
                 const contentDiv = document.createElement('div')
+                contentDiv.style.width = 'calc(100% - 90px)';
                 userBar.className = 'user-bar';
                 contentDiv.appendChild(userBar);
 
@@ -123,6 +124,7 @@ function loadSearchPosts() {
 
                 const userBar = document.createElement('p');
                 const contentDiv = document.createElement('div')
+                contentDiv.style.width = 'calc(100% - 90px)';
                 userBar.className = 'user-bar';
                 contentDiv.appendChild(userBar);
 
