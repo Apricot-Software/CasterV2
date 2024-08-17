@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="">
+<head>
+    <link rel="icon" type="image/png" href="static/img/casterlogo.png">
+    <meta name="viewport" content="width=device-width, initial-scale=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search / Caster</title>
+    <link rel="stylesheet" href="static/style/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <img src="static/img/casterlogo.png" width="50px">
+        </div>
+        <div class="content">
+            <div class="left-bar">
+                <a class="bar-button ab-text" onclick="window.location.href = '/'"><img src="static/img/home.png" class="bar-button-icon"><span class="bar-text">Home</span></a>
+                <a class="bar-button ab-text" onclick="window.location.href = '/profile'"><img src="static/img/profile.png" class="bar-button-icon"><span class="bar-text">Profile</span></a>
+                <a class="bar-button ab-text" onclick="window.location.href = '/search'"><img src="static/img/search.png" class="bar-button-icon"><span class="bar-text">Search</span></a>
+                <a class="bar-button ab-text" onclick="window.location.href = '/create'"><img src="static/img/pencil.png" class="bar-button-icon"><span class="bar-text">Post</span></a>
+                <a class="bar-button ab-text" onclick="window.location.href = '/settings'"><img src="static/img/settings.png" class="bar-button-icon"><span class="bar-text">Settings</span></a>
+            </div>
+            <div class="main-content">
+                <span class="bar-button" style="margin: 1em; background: none;"><img src="static/img/search.png" class="bar-button-icon"><input class="ab-text" style="background: none; border: none" id="searchInput" type="text" oninput="loadSearchPosts()" placeholder="Search Caster"></span>
+                <br>
+                <div class="post-flex-box" id="search-post-flex-box"></div>
+                <div class="spacer"></div>
+            </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="static/scripts/homeScript.js" defer></script>
+</html>

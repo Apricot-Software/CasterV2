@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&amp;display=swap" rel="stylesheet">
+    <title>Full Page GIF</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Ensures no scrollbars */
+        }
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Places the GIF behind other content */
+            object-fit: cover
+        }
+    </style>
+</head>
+<body>
+    <div style="
+    font-family: &quot;Roboto Mono&quot;, monospace;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100vh;
+    background: rgba(0,0,0,.5);
+    color: white;
+    font-size: 20px;">Content could not be found</div>
+    <video autoplay loop muted src="/static/img/novid.mp4" alt="Background GIF" class="background">
+
+    <!-- Your content goes here -->
+    <div style="position: relative; z-index: 1;">
+        <h1>Hello, World!</h1>
+        <p>This is a simple HTML page with a GIF covering the entire background.</p>
+    </div>
+</body>
+</html>

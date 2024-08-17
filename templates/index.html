@@ -1,0 +1,214 @@
+<html><head>
+<title>Tubular</title>
+<link rel="icon" type="image/x-icon" href="/static/fox.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@900&amp;family=Workbench&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@900&amp;family=Workbench&amp;display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Nabla&amp;display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:title" content="Tubular">
+<meta property="og:description" content="A quick and easy YouTube video downloader">
+<meta property="og:image" content="https://www.youtubekeep.com/static/tubular.png">
+<meta property="og:url" content="https://www.youtubekeep.com/">
+<meta property="og:type" content="website">
+</head>
+<body>
+<style>
+body p {
+
+    -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
+       -moz-animation: fadein 2s; /* Firefox < 16 */
+        -ms-animation: fadein 2s; /* Internet Explorer */
+         -o-animation: fadein 2s; /* Opera < 12.1 */
+            animation: fadein 2s;
+}
+
+@keyframes fadein {
+    from { opacity: 0;}
+    to   { opacity: 1;}
+}
+
+/* Firefox < 16 */
+@-moz-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Internet Explorer */
+@-ms-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Opera < 12.1 */
+@-o-keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+body {
+  background: rgb(5,10,5);
+  color: white;
+  font-family: verdana;
+  font-size: 20px;
+}
+.page {
+  text-align: center
+}
+
+#icon {
+  font-size: 100px;
+  margin-top: px;
+  text-align: left;
+  position: absolute;
+}
+#myVideo{
+  border-radius: 25px;
+}
+
+.ui {
+  border-radius: 10px;
+  padding: 10px;
+  border: 0px;
+  outline: none;
+  margin-bottom: 10px;
+}
+
+.button {
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.downloadbttn {
+  font-family: verdana;
+  background: #61fb58;
+  margin-top: 10px;
+  color: black;
+  font-family: Arial;
+  font-size: 20px;
+}
+
+.input {
+  width: 35%;
+  max-width: 700px;
+  background: #262B2B;
+  color: white;
+  font-size: 20px;
+}
+
+.icon {
+  background: darkgrey;
+  border-radius: 100%;
+}
+
+.header {
+  margin: 0;
+  position: relative;
+  font-family: "Manrope", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+  font-size: 40px;
+  font-width: 100;
+  color: white;
+  cursor: default;
+}
+    .menu {
+        font-size: 30px;
+        float: right;
+        padding-top: 10px;
+        padding-right: 30px;
+        font-family: 'Nabla';
+        word-wrap: 'break-word';
+        color: white;
+        transition: .2s;
+        
+    }
+        .name {
+        font-size: 25px;
+        float: left;
+        padding-top: 10px;
+        padding-right: 10px;
+        font-family: 'Nabla';
+        word-wrap: 'break-word';
+        color: white;
+        transition: .2s;
+        
+    }
+        a:link, a:visited {
+	color: #a5e1ff;
+        text-decoration: none;
+    }
+</style>
+<div><p class="header">TinyLink<a class="menu" href="https://ko-fi.com/limeadedev">Donate to my Ko-fi</a></p></div>
+<div class="page">
+<div></div>
+<div></div>
+<p>Put in a link to be shortened</p>
+
+<input width="500px" class="ui input" type="text" id="videoSrcInput" placeholder="Put in any link!">
+
+<button class="ui button downloadbttn" onclick="updateVideo()">Shorten</button>
+
+<div></div>
+
+
+<div></div>
+<div style="padding-top: 10px;"></div>
+
+</div>
+<script>
+  async function getUrlFromApi(apiEndpoint) {
+    try {
+        // Make the API request
+        const response = await fetch(apiEndpoint);
+
+        // Check if the response is okay (status code 200-299)
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        // Parse the JSON response
+        const data = await response.json();
+
+        // Extract the "url" value
+        const url = data.url;
+
+        // Return or use the "url" value
+        console.log('URL:', url);
+        return url;
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+    }
+  }
+  function updateVideo() {
+    var youtubeUrl = document.getElementById("videoSrcInput").value;
+    var transportUrl = encodeURIComponent(youtubeUrl);
+
+    // Disable the input and button
+    document.getElementById("videoSrcInput").remove();
+    document.querySelector(".downloadbttn").disabled = true;
+    document.querySelector(".downloadbttn").style.cursor = 'not-allowed';
+    document.querySelector(".downloadbttn").innerHTML = "Shorting...";
+
+    document.querySelector(".downloadbttn").style.width = "70%"
+
+    // Redirect to the download URL
+    document.querySelector(".downloadbttn").innerHTML = getUrlFromApi("/");
+  }
+
+</script>
+
+
+</body></html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="https://www.g/static.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+    <title>Video Player</title>
+    <style>
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+.throbber {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 50px;
+    height: 50px;
+    margin: -25px 0 0 -25px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 4px solid #fff;
+    z-index: 0;
+    animation: spin 1s ease-in-out infinite;
+    display: none; /* Hidden by default */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#video-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+}
+
+#controls {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.7));
+    transition: opacity 0.3s;
+    color: #fff;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    opacity: 0;
+}
+
+#video-container:hover #controls {
+    opacity: 1;
+}
+
+#seekBar {
+    width: 100%;
+    margin-bottom: 10px; /* Space between seekBar and other controls */
+}
+
+#controls-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+#controls-buttons img {
+    cursor: pointer;
+}
+
+#timeDisplay {
+    min-width: 80px;
+}
+
+#video-player {
+    width: 100%;
+    height: 100%;
+    background: black;
+}
+
+/* Settings icon styles */
+.settings-icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    background: url('/static/img/settings.png') no-repeat center center;
+    background-size: contain;
+    border: none;
+    outline: none;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    bottom: 50px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid #214d26;
+    border-radius: 5px;
+    color: #fff;
+    z-index: 10;
+}
+
+.dropdown-menu button {
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 10px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+}
+
+.dropdown-menu button:hover {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.cast-button {
+    width: 24px;
+    height: 24px;
+    background: url('/static/img/chromecast.png') no-repeat center center;
+    background-size: contain;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+/* Optional: Change color based on casting state */
+.cast-button.connected {
+    filter: invert(34%) sepia(91%) saturate(6246%) hue-rotate(101deg) brightness(96%) contrast(103%);
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+    input[type='range'] {
+        overflow: hidden;
+        width: 80px;
+        -webkit-appearance: none;
+        background-color: rgba(255,255,255,0.5);
+    }
+
+    input[type='range']::-webkit-slider-runnable-track {
+        height: 5px;
+        -webkit-appearance: none;
+        color: #13bba4;
+        margin-top: -1px;
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+        width: 10px;
+        -webkit-appearance: none;
+        height: 10px;
+        cursor: ew-resize;
+        background: #434343;
+        box-shadow: -1200px 0 0 1200px green ;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+<div id="video-container">
+    <div id="throbber" class="throbber"></div>
+
+    <video id="video-player" poster="/static/img/playerbanner.png" onerror="this.poster = '/static/img/processing.png';" autoplay muted loop>
+        <source id="video-source" src="" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div id="controls">
+        <input id="seekBar" type="range" min="0" max="100" value="0">
+
+        <div id="controls-buttons">
+            <img width="20px" src="/static/img/pause.png" id="playPauseBtn">
+            <button class="settings-icon" id="settingsBtn"></button>
+            <div class="dropdown-menu" id="dropdownMenu" style="display: none;">
+                <button onclick="loadVideo('high')">1080</button>
+                <button onclick="loadVideo('med')">720</button>
+                <button onclick="loadVideo('low')">480</button>
+                <button onclick="loadVideo('verylow')">240</button>
+            </div>
+            <img width="20px" src="/static/img/mute.png" id="muteBtn">
+            <input id="volumeControl" type="range" min="0" max="1" step="0.01" value="1">
+            <span id="timeDisplay">00:00 / 00:00</span>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+        let currentTime = 0;
+        let currentVideo = "{{ v_id }}";
+
+        function loadVideo(quality) {
+            const videoElement = document.getElementById('video-player');
+            const videoSource = document.getElementById('video-source');
+
+            if (videoElement.readyState > 0) {
+                currentTime = videoElement.currentTime;
+                captureCurrentFrame(videoElement);
+            }
+
+            switch (quality) {
+                case 'high':
+                    videoSource.src = `/cds/videos/${currentVideo}`;
+                    break;
+                case 'med':
+                    videoSource.src = `/cds/videos/med_${currentVideo}`;
+                    break;
+                case 'low':
+                    videoSource.src = `/cds/videos/low_${currentVideo}`;
+                    break;
+                case 'verylow':
+                    videoSource.src = `/cds/videos/very_low_${currentVideo}`;
+                    break;
+            }
+
+            videoElement.load();
+            videoElement.currentTime = currentTime;
+            videoElement.play();
+        }
+
+        function captureCurrentFrame(videoElement) {
+            if (videoElement.paused) return;
+
+            videoElement.pause();
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+            const dataURL = canvas.toDataURL('image/png');
+
+            videoElement.poster = dataURL;
+            videoElement.play();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('video-player');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const muteBtn = document.getElementById('muteBtn');
+            const volumeControl = document.getElementById('volumeControl');
+            const seekBar = document.getElementById('seekBar');
+            const timeDisplay = document.getElementById('timeDisplay');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+            video.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                    playPauseBtn.src = '/static/img/pause.png';
+                } else {
+                    if (video.muted) {
+                        video.muted = false;
+                        muteBtn.src = '/static/img/unmute.png';
+                    } else {
+                        video.pause();
+                        playPauseBtn.src = '/static/img/play.png';
+                    }
+                }
+
+            });
+
+            playPauseBtn.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                    playPauseBtn.src = '/static/img/pause.png';
+                } else {
+                    video.pause();
+                    playPauseBtn.src = '/static/img/play.png';
+                }
+            });
+
+            muteBtn.addEventListener('click', () => {
+                video.muted = !video.muted;
+                muteBtn.src = video.muted ? '/static/img/mute.png' : '/static/img/unmute.png';
+            });
+
+            volumeControl.addEventListener('input', () => {
+                video.volume = volumeControl.value;
+            });
+
+            video.addEventListener('loadedmetadata', () => {
+                seekBar.max = video.duration;
+                updateTimeDisplay();
+            });
+
+            video.addEventListener('timeupdate', () => {
+                seekBar.value = video.currentTime;
+                updateTimeDisplay();
+            });
+
+            seekBar.addEventListener('input', () => {
+                video.currentTime = seekBar.value;
+            });
+
+            settingsBtn.addEventListener('click', () => {
+                dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!settingsBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                    dropdownMenu.style.display = 'none';
+                }
+            });
+
+            const throbber = document.getElementById('throbber');
+
+            video.addEventListener('waiting', () => {
+                console.log('Video is waiting, showing throbber');
+                throbber.style.display = 'block';
+            });
+
+            video.addEventListener('canplay', () => {
+                console.log('Video can play, hiding throbber');
+                throbber.style.display = 'none';
+            });
+
+            video.addEventListener('loadeddata', () => {
+                console.log('Video data is loaded');
+            });
+
+            // Additional debug for the video element
+            console.log('Video element:', video);
+
+            function updateTimeDisplay() {
+                const currentMinutes = Math.floor(video.currentTime / 60);
+                const currentSeconds = Math.floor(video.currentTime % 60).toString().padStart(2, '0');
+                const durationMinutes = Math.floor(video.duration / 60);
+                const durationSeconds = Math.floor(video.duration % 60).toString().padStart(2, '0');
+                timeDisplay.textContent = `${currentMinutes}:${currentSeconds} / ${durationMinutes}:${durationSeconds}`;
+            }
+        });
+
+
+        loadVideo('high');
+    </script>
+</body>
+</html>
