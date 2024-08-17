@@ -52,6 +52,14 @@ function loadPosts() {
                 postContent.className = 'post-text';
                 contentDiv.appendChild(postContent);
 
+                if (post.videoId !== "None") {
+                    const videoPlayer = document.createElement('div');
+                    console.log("Loading video player for video ID:", post.videoId);
+                    videoPlayer.className = 'player-container'
+                    videoPlayer.innerHTML = `<iframe frameborder="0" src="/iframe/videoplayer?vid=${post.videoId}"></iframe>`;
+                    contentDiv.appendChild(videoPlayer);
+                }
+
                 const actionBar = document.createElement('div');
                 actionBar.className = 'post-action-bar';
                 contentDiv.appendChild(actionBar);
@@ -158,6 +166,14 @@ function loadSearchPosts() {
                 postContent.innerHTML = `${post.postContent}`;
                 postContent.className = 'post-text';
                 contentDiv.appendChild(postContent);
+
+                if (post.videoId !== "None") {
+                    const videoPlayer = document.createElement('div');
+                    console.log("Loading video player for video ID:", post.videoId);
+                    videoPlayer.className = 'player-container'
+                    videoPlayer.innerHTML = `<iframe frameborder="0" src="/iframe/videoplayer?vid=${post.videoId}"></iframe>`;
+                    contentDiv.appendChild(videoPlayer);
+                }
 
                 const actionBar = document.createElement('div');
                 actionBar.className = 'post-action-bar';
