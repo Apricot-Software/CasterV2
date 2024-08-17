@@ -3,7 +3,7 @@
 import threading
 from pathlib import Path
 import time
-from realsecrets import sql_host, sql_dbname, sql_user, sql_password, nr_user, nr_pass
+from castersecrets import sql_host, sql_dbname, sql_user, sql_password, nr_user, nr_pass
 from flask import Flask, jsonify, render_template, redirect, request, url_for, make_response, session, send_file, send_from_directory
 from moviepy.video.io.VideoFileClip import VideoFileClip
 from moviepy.video.fx.all import resize
