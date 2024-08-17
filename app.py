@@ -24,6 +24,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = nr_pass
+app.config['MAX_CONTENT_LENGTH'] = 1 * 1000 * 1000 * 1000
 
 valid_chars = "".join([string.digits, string.ascii_letters, "_"])
 valid_pass_chars = "".join([string.digits, string.ascii_letters, string.punctuation])
