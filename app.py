@@ -891,6 +891,8 @@ def send_post_api():
             convert_to_very_low_quality(file_path, very_low_quality_path)
 
             print("part2 done")
+        else:
+            vid = None
 
         c.execute(
             'INSERT INTO casterposts (messageid, username, postcontent, timestamp, videoid) VALUES (%s, %s, %s, %s, %s)',
